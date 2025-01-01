@@ -52,7 +52,7 @@ float Unit::GetHealthScale() const {
 }
 
 void Unit::SetLifeBarLength(float new_length) {
-  lifebar_length_ = std::min(new_length, 0.0f);
+  lifebar_length_ = std::max(new_length, 0.0f);
 }
 void Unit::SetLifeBarOffset(glm::vec2 new_offset) {
   lifebar_offset_ = new_offset;
