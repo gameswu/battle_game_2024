@@ -18,5 +18,8 @@ class CannonBall : public Bullet {
 
  private:
   glm::vec2 velocity_{};
+  glm::vec2 initial_position_;
+  float traveled_distance_;
+  float CalculateDamage() const;
 };
 }  // namespace battle_game::bullet

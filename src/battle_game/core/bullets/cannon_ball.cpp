@@ -13,7 +13,9 @@ CannonBall::CannonBall(GameCore *core,
                        float damage_scale,
                        glm::vec2 velocity)
     : Bullet(core, id, unit_id, player_id, position, rotation, damage_scale),
-      velocity_(velocity) {
+      velocity_(velocity),
+      initial_position_(position),
+      traveled_distance_(0.0f) {
 }
 
 void CannonBall::Render() {
@@ -26,6 +28,7 @@ void CannonBall::Render() {
 void CannonBall::Update() {
   position_ += velocity_ * kSecondPerTick;
   bool should_die = false;
+  traveled_distance_ = glm::distance(initial_position_, position_);
   if (game_core_->IsBlockedByObstacles(position_)) {
     should_die = true;
   }
@@ -36,7 +39,8 @@ void CannonBall::Update() {
       continue;
     }
     if (unit.second->IsHit(position_)) {
-      game_core_->PushEventDealDamage(unit.first, id_, damage_scale_ * 10.0f);
+      float damage = CalculateDamage();
+      game_core_->PushEventDealDamage(unit.first, id_, damage);
       should_die = true;
     }
   }
@@ -44,6 +48,13 @@ void CannonBall::Update() {
   if (should_die) {
     game_core_->PushEventRemoveBullet(id_);
   }
+}
+
+float CannonBall::CalculateDamage() const {
+  float max_distance = 40.0f;  // Maximum distance.
+  float damage =
+      damage_scale_ * (1.0f - traveled_distance_ / max_distance) * 10.0f;
+  return std::max(damage, 0.0f);
 }
 
 CannonBall::~CannonBall() {
